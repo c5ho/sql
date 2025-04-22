@@ -13,7 +13,9 @@ sorted by customer_last_name, then customer_first_ name. */
 
 SELECT * 
 FROM customer
-ORDER BY LOWER(customer_last_name), LOWER(customer_first_name)
+ORDER BY 
+	LOWER(customer_last_name) ASC, 
+	LOWER(customer_first_name) ASC
 LIMIT 10;
 
 --WHERE
@@ -26,8 +28,9 @@ WHERE product_id IN (4, 9);
 -- option 2
 SELECT *
 FROM customer_purchases
-WHERE product_id = 4
-OR product_id = 9;
+WHERE 
+	product_id = 4
+	OR product_id = 9;
 
 /*2. Write a query that returns all customer purchases and a new calculated column 'price' (quantity * cost_to_customer_per_qty), 
 filtered by vendor IDs between 8 and 10 (inclusive) using either:
@@ -38,8 +41,9 @@ filtered by vendor IDs between 8 and 10 (inclusive) using either:
 
 SELECT *, quantity*cost_to_customer_per_qty AS 'price'
 FROM customer_purchases
-WHERE vendor_id >=8
-AND vendor_id <=10;
+WHERE 
+	vendor_id >=8
+	AND vendor_id <=10;
 
 -- option 2
 
@@ -53,7 +57,9 @@ Using the product table, write a query that outputs the product_id and product_n
 columns and add a column called prod_qty_type_condensed that displays the word “unit” 
 if the product_qty_type is “unit,” and otherwise displays the word “bulk.” */
 
-SELECT product_id, product_name,
+SELECT 
+	product_id, 
+	product_name,
 CASE
 	WHEN product_qty_type = 'unit' 
 		THEN 'unit'
@@ -65,7 +71,9 @@ FROM product;
 add a column to the previous query called pepper_flag that outputs a 1 if the product_name 
 contains the word “pepper” (regardless of capitalization), and otherwise outputs 0. */
 
-SELECT product_id, product_name,
+SELECT 
+	product_id, 
+	product_name,
 CASE
 	WHEN product_qty_type = 'unit' 
 		THEN 'unit'
@@ -84,7 +92,10 @@ vendor_id field they both have in common, and sorts the result by vendor_name, t
 
 SELECT *
 FROM vendor
-INNER JOIN vendor_booth_assignments ON vendor.vendor_id = vendor_booth_assignments.vendor_id;
+INNER JOIN vendor_booth_assignments ON vendor.vendor_id = vendor_booth_assignments.vendor_id
+ORDER BY 
+	LOWER(vendor_name) ASC,
+	market_date ASC;
 
 /* SECTION 3 */
 
@@ -92,7 +103,9 @@ INNER JOIN vendor_booth_assignments ON vendor.vendor_id = vendor_booth_assignmen
 /* 1. Write a query that determines how many times each vendor has rented a booth 
 at the farmer’s market by counting the vendor booth assignments per vendor_id. */
 
-SELECT vendor_id, COUNT(vendor_id)
+SELECT 
+	vendor_id, 
+	COUNT(vendor_id)
 FROM vendor_booth_assignments
 GROUP BY vendor_id;
 
@@ -102,13 +115,21 @@ of customers for them to give stickers to, sorted by last name, then first name.
 
 HINT: This query requires you to join two tables, use an aggregate function, and use the HAVING keyword. */
 
-SELECT c.customer_first_name, c.customer_last_name
+SELECT
+	c.customer_last_name,
+	c.customer_first_name,
+	SUM(p.quantity*p.cost_to_customer_per_qty) AS total_spend
 FROM customer c
-INNER JOIN customer_purchases p on c.customer_id = p.customer_id
-GROUP BY c.customer_last_name
+INNER JOIN customer_purchases p ON c.customer_id = p.customer_id
+GROUP BY 
+	c.customer_id, 
+	c.customer_last_name, 
+	c.customer_first_name
 HAVING	
-	SUM(p.quantity*p.cost_to_customer_per_qty) > 2000
-ORDER BY c.customer_last_name, c.customer_first_name;
+	total_spend > 2000
+ORDER BY 
+	LOWER(c.customer_last_name) ASC, 
+	LOWER(c.customer_first_name) ASC;
 	
 --Temp Table
 /* 1. Insert the original vendor table into a temp.new_vendor and then add a 10th vendor: 
@@ -159,4 +180,4 @@ FROM customer_purchases
 WHERE 
 	month = '04' AND
 	year = '2022'
-GROUP BY customer_id
+GROUP BY customer_id;
