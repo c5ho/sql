@@ -54,7 +54,9 @@ The store wants to keep customer addresses. Propose two architectures for the CU
 **HINT:** search type 1 vs type 2 slowly changing dimensions. 
 
 ```
-Your answer...
+Type 1 Slowly Changing Dimension (SCD) will update an existing record.  When a customer address is updated, the new address overwrites the old address and there is no history of any previous addresses.
+
+Type 2 SCD will create a new record everytime an address is changed.  Since each change creates a new record, all previous records are kept and a history of all the changes are available.  Effective dates or an active flag can be used to indicate the current address.
 ```
 
 ***
